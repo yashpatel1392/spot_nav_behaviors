@@ -2,9 +2,11 @@
 import rospy
 
 from flexbe_core import EventState, Logger
+import bosdyn.client.util
+from bosdyn.client.lease import LeaseClient
 
 
-class ClaimLease(EventState):
+class SetupSpot(EventState):
 	'''
 	Example for a state to demonstrate which functionality is available for state implementation.
 	This example lets the behavior wait until the given target_time has passed since the behavior has been started.
@@ -16,39 +18,42 @@ class ClaimLease(EventState):
 
 	'''
 
-	def __init__(self, target_time):
+	def __init__(self, username, password):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
-		super(ClaimLease, self).__init__(outcomes = ['continue', 'failed'])
-
-		# Store state parameter for later use.
-		self._target_time = rospy.Duration(target_time)
-
-		# The constructor is called when building the state machine, not when actually starting the behavior.
-		# Thus, we cannot save the starting time now and will do so later.
-		self._start_time = None
+		super(SetupSpot, self).__init__(outcomes = ['continue', 'failed'],
+                                  		output_keys=['sdk', 'robot', 'lease'])
+		self._sdk = None
+		self._robot = None
+		self._lease = None
+		self._username = username
+		self._password = password
+	
 
 
 	def execute(self, userdata):
 		# This method is called periodically while the state is active.
-		# Main purpose is to check state conditions and trigger a corresponding outcome.
-		# If no outcome is returned, the state will stay active.
-
-		if rospy.Time.now() - self._start_time > self._target_time:
-			return 'continue' # One of the outcomes declared above.
+		userdata.sdk = self._sdk
+		userdata.robot = self._robot
+		userdata.lease = self._lease
+  
+		return 'continue'
 		
 
 	def on_enter(self, userdata):
 		# This method is called when the state becomes active, i.e. a transition from another state to this one is taken.
 		# It is primarily used to start actions which are associated with this state.
-
-		# The following code is just for illustrating how the behavior logger works.
-		# Text logged by the behavior logger is sent to the operator and displayed in the GUI.
-
-		time_to_wait = (self._target_time - (rospy.Time.now() - self._start_time)).to_sec()
-
-		if time_to_wait > 0:
-			Logger.loginfo('Need to wait for %.1f seconds.' % time_to_wait)
-
+		
+		self._sdk = bosdyn.client.create_standard_sdk('Spot FlexBe Client')
+		self._robot = self._sdk.create_robot(self._username) # check if the hostname should be the username...............
+		bosdyn.client.util.authenticate(self._robot) 
+  
+		# alternative approach from spot's documentation
+  
+		# self._robot = self._sdk.create_robot('192.0.0.0') # check if the hostname should be the username...............
+		# robot.authenticate('username', 'password')
+  
+		self._lease = self._robot.ensure_client(LeaseClient.default_service_name)
+  
 
 	def on_exit(self, userdata):
 		# This method is called when an outcome is returned and another state gets active.
@@ -62,8 +67,7 @@ class ClaimLease(EventState):
 		# If possible, it is generally better to initialize used resources in the constructor
 		# because if anything failed, the behavior would not even be started.
 
-		# In this example, we use this event to set the correct start time.
-		self._start_time = rospy.Time.now()
+		pass
 
 
 	def on_stop(self):
