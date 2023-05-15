@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/csrobot/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/opt/ros/melodic/share/fetch_gazebo/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_msgs/tuw_geometry_msgs/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_multi_robot_ctrl/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_multi_robot_goal_generator/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_multi_robot_local_behavior_controller/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_multi_robot_router/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_multi_robot_rviz/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_msgs/tuw_nav_msgs/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_msgs/tuw_vehicle_msgs/include/**",
+        "/home/csrobot/catkin_ws/src/tuw_multi_robot/tuw_voronoi_graph/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
