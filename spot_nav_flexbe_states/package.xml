@@ -14,6 +14,10 @@
 
   <run_depend>flexbe_core</run_depend>
 
+  <run_depend>bosdyn-api</run_depend>
+  <run_depend>bosdyn-client</run_depend>
+
+
   <export>
     <flexbe_states />
   </export>

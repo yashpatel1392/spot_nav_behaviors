@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Localization Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_localization_test_sm" class="SpotLocalizationTestSM" />
+	<tagstring>Spot Localization Test</tagstring>
+	<author>Yash P</author>
+	<date>Mon Jun 26 2023</date>
+	<description>
+		Spot Localization Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="init_waypoint" default="eighty-drum-3hz7jJNJ81RLN5fJavoEhg==" label="init_waypoint" hint="Sets the init_waypoint" />
+
+	</params>
+
+
+</behavior>
