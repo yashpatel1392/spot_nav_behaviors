@@ -9,6 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from spot_nav_flexbe_states.localize import Localize
+from spot_nav_flexbe_states.navigate import NavigateTo
+from spot_nav_flexbe_states.pause import PauseState
 from spot_nav_flexbe_states.setup_spot import SetupSpot
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -20,18 +22,20 @@ from spot_nav_flexbe_states.setup_spot import SetupSpot
 Created on Mon Jun 26 2023
 @author: Yash P
 '''
-class SpotLocalizationTestSM(Behavior):
+class SpotNavigationTestSM(Behavior):
 	'''
-	Spot Localization Test
+	Spot Navigation Test
 	'''
 
 
 	def __init__(self):
-		super(SpotLocalizationTestSM, self).__init__()
-		self.name = 'Spot Localization Test'
+		super(SpotNavigationTestSM, self).__init__()
+		self.name = 'Spot Navigation Test'
 
 		# parameters of this behavior
-		self.add_parameter('init_waypoint', 'eighty-drum-3hz7jJNJ81RLN5fJavoEhg==')
+		self.add_parameter('init_waypoint_id', 'eighty-drum-3hz7jJNJ81RLN5fJavoEhg==')
+		self.add_parameter('goal_waypoint_id', 'cushy-dodo-SrmNEAcdcTsAepg.hh0FkA==')
+		self.add_parameter('pause_topic', 'pause_topic')
 
 		# references to used behaviors
 
@@ -45,7 +49,7 @@ class SpotLocalizationTestSM(Behavior):
 
 
 	def create(self):
-		# x:835 y:206, x:372 y:400
+		# x:1187 y:459, x:372 y:400
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -60,12 +64,25 @@ class SpotLocalizationTestSM(Behavior):
 										SetupSpot(),
 										transitions={'continue': 'Localize', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease'})
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
 
-			# x:500 y:127
-			OperatableStateMachine.add('Localize',
-										Localize(initial_waypoint=self.init_waypoint),
+			# x:980 y:187
+			OperatableStateMachine.add('Navigate',
+										NavigateTo(destination_waypoint=self.goal_waypoint_id),
 										transitions={'continue': 'finished', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
+
+			# x:723 y:117
+			OperatableStateMachine.add('Pause',
+										PauseState(topic=self.pause_topic),
+										transitions={'success': 'Navigate'},
+										autonomy={'success': Autonomy.Off})
+
+			# x:461 y:76
+			OperatableStateMachine.add('Localize',
+										Localize(initial_waypoint=self.init_waypoint_id),
+										transitions={'continue': 'Pause', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client'})
 

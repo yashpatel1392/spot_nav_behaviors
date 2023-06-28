@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Navigation Test - Multi Reps">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_navigation_test___multi_reps_sm" class="SpotNavigationTestMultiRepsSM" />
+	<tagstring>Spot Navigation Test</tagstring>
+	<author>Yash P</author>
+	<date>Mon Jun 26 2023</date>
+	<description>
+		Spot Navigation Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="init_waypoint_id" default="eighty-drum-3hz7jJNJ81RLN5fJavoEhg==" label="init_waypoint_id" hint="Sets the init_waypoint_id" />
+
+		<param type="text" name="goal_waypoint_id" default="cushy-dodo-SrmNEAcdcTsAepg.hh0FkA==" label="goal_waypoint_id" hint="Sets the goal_waypoint_id" />
+
+		<param type="text" name="pause_topic" default="pause_topic" label="pause_topic" hint="Sets the pause_topic" />
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="numeric" name="reps" default="0" label="reps" hint="Sets the reps">
+			<min value="0" />
+			<max value="1" />
+		</param>
+
+	</params>
+
+
+</behavior>

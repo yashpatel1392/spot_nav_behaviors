@@ -8,6 +8,7 @@ from bosdyn.client.lease import LeaseClient, LeaseKeepAlive
 from bosdyn.client.power import PowerClient, power_on_motors, safe_power_off_motors, robot_state_pb2, power_pb2
 from bosdyn.client.robot_state import RobotStateClient
 from bosdyn.client.robot_command import RobotCommandBuilder, RobotCommandClient
+from bosdyn.client.exceptions import ResponseError
 import time
 
 class NavigateTo(EventState):
@@ -25,12 +26,11 @@ class NavigateTo(EventState):
 	def __init__(self, destination_waypoint):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 		super(NavigateTo, self).__init__(outcomes = ['continue', 'failed'],
-                                   		input_keys = ['state_client', 'graph_nav_client'])
+                                   		input_keys = ['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client'])
 		self._destination_waypoint = destination_waypoint
-		self._power_client = self._robot.ensure_client(PowerClient.default_service_name)
 		self._started_powered_on = bool
 		self._powered_on = bool
-		self._robot_command_client = self._robot.ensure_client(RobotCommandClient.default_service_name)
+		
 
 
 	# Taken from spot-sdk examples
@@ -62,12 +62,12 @@ class NavigateTo(EventState):
 		self._powered_on = (power_state.motor_power_state == power_state.STATE_ON)
 		return self._powered_on
 
-	def toggle_power(self, should_power_on, state_client):
+	def toggle_power(self, should_power_on, state_client, power_client, robot_command_client):
 		"""Power the robot on/off dependent on the current power state."""
 		is_powered_on = self.check_is_powered_on(state_client)
 		if not is_powered_on and should_power_on:
 			# Power on the robot up before navigating when it is in a powered-off state.
-			power_on_motors(self._power_client)
+			power_on_motors(power_client)
 			motors_on = False
 			while not motors_on:
 				future = state_client.get_robot_state_async()
@@ -81,18 +81,51 @@ class NavigateTo(EventState):
 		elif is_powered_on and not should_power_on:
 			# Safe power off (robot will sit then power down) when it is in a
 			# powered-on state.
-			safe_power_off_motors(self._robot_command_client, state_client)
+			safe_power_off_motors(robot_command_client, state_client)
 		else:
 			# Return the current power state without change.
 			return is_powered_on
 		# Update the locally stored power state.
-		self.check_is_powered_on()
+		self.check_is_powered_on(state_client)
 		return self._powered_on
 
 	def execute(self, userdata):
 		# This method is called periodically while the state is active.
 		# Main purpose is to check state conditions and trigger a corresponding outcome.
 		# If no outcome is returned, the state will stay active.
+  
+		print("acquiring the lease.........................................")
+		with LeaseKeepAlive(userdata.lease, must_acquire=True, return_at_exit=True):
+			print("turning the power on...........................................")
+			if not self.toggle_power(should_power_on=True, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client):
+				print("not powered on..........")
+				return 'failed'
+
+			nav_to_cmd_id = None
+			is_finished = False
+
+			print("entering while loop...........")
+			while not is_finished:
+				try:
+					print("issuing nav command................")
+					nav_to_cmd_id = userdata.graph_nav_client.navigate_to(self._destination_waypoint, 1.0,
+																		command_id=nav_to_cmd_id)
+					print("done issuing nav command................")
+				except ResponseError as e:
+					print(f'Error while navigating {e}')
+					break
+
+				time.sleep(.5)
+				print("is_finished BEFORE checking: ", is_finished)
+				is_finished = self._check_success(nav_to_cmd_id, userdata.graph_nav_client)
+				print("is_finished AFTER checking: ", is_finished)
+
+			if self._powered_on and not self._started_powered_on:
+				print("turning power down..........................")
+				self.toggle_power(should_power_on=False, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client)
+
+			print("powered off.........")
+ 
 		return 'continue' # One of the outcomes declared above.
 		
 

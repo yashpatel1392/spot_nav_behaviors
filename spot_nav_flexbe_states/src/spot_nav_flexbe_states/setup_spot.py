@@ -6,7 +6,8 @@ from bosdyn.client.util import *
 from bosdyn.client.lease import LeaseClient, LeaseKeepAlive
 from bosdyn.client.robot_state import RobotStateClient
 from bosdyn.client.graph_nav import GraphNavClient
-
+from bosdyn.client.power import PowerClient
+from bosdyn.client.robot_command import RobotCommandBuilder, RobotCommandClient
 
 class SetupSpot(EventState):
 	'''
@@ -23,23 +24,28 @@ class SetupSpot(EventState):
 	def __init__(self):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 		super(SetupSpot, self).__init__(outcomes = ['continue', 'failed'],
-                                  		output_keys=['state_client', 'graph_nav_client'])
+                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client'])
 		self._sdk = None
 		self._robot = None
 		self._lease = None
 		self._state_client = None
 		self._graph_nav_client = None
+		self._power_client = None
+		self._robot_command_client = None
 
 
 	def execute(self, userdata):
 		# This method is called periodically while the state is active.
-		with LeaseKeepAlive(self._lease, must_acquire=True, return_at_exit=True):
+		# with LeaseKeepAlive(self._lease, must_acquire=True, return_at_exit=True):
 			# userdata.sdk = self._sdk
 			# userdata.robot = self._robot
 			# userdata.lease = self._lease
-			userdata.state_client = self._state_client
-			userdata.graph_nav_client = self._graph_nav_client
-			print("in the lease keep alive block.................")
+		userdata.state_client = self._state_client
+		userdata.graph_nav_client = self._graph_nav_client
+		userdata.lease = self._lease
+		userdata.power_client = self._power_client
+		userdata.robot_command_client = self._robot_command_client
+		print("in the lease keep alive block.................")
 		return 'continue'
 		
 
@@ -74,6 +80,9 @@ class SetupSpot(EventState):
 		print("Creating graph nav client.................")
 		self._graph_nav_client = self._robot.ensure_client(GraphNavClient.default_service_name)
 		print("Creating graph nav client.................")
+  
+		self._power_client = self._robot.ensure_client(PowerClient.default_service_name)
+		self._robot_command_client = self._robot.ensure_client(RobotCommandClient.default_service_name)
 
 	def on_exit(self, userdata):
 		# This method is called when an outcome is returned and another state gets active.
