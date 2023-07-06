@@ -8,6 +8,7 @@ from bosdyn.client.robot_state import RobotStateClient
 from bosdyn.client.graph_nav import GraphNavClient
 from bosdyn.client.power import PowerClient
 from bosdyn.client.robot_command import RobotCommandBuilder, RobotCommandClient
+from bosdyn.client.license import LicenseClient
 
 class SetupSpot(EventState):
 	'''
@@ -24,7 +25,7 @@ class SetupSpot(EventState):
 	def __init__(self):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 		super(SetupSpot, self).__init__(outcomes = ['continue', 'failed'],
-                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client'])
+                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'license_client', 'robot'])
 		self._sdk = None
 		self._robot = None
 		self._lease = None
@@ -32,6 +33,7 @@ class SetupSpot(EventState):
 		self._graph_nav_client = None
 		self._power_client = None
 		self._robot_command_client = None
+		self._license_client = None
 
 
 	def execute(self, userdata):
@@ -45,6 +47,8 @@ class SetupSpot(EventState):
 		userdata.lease = self._lease
 		userdata.power_client = self._power_client
 		userdata.robot_command_client = self._robot_command_client
+		userdata.license_client = self._license_client
+		userdata.robot = self._robot
 		print("in the lease keep alive block.................")
 		return 'continue'
 		
@@ -83,6 +87,7 @@ class SetupSpot(EventState):
   
 		self._power_client = self._robot.ensure_client(PowerClient.default_service_name)
 		self._robot_command_client = self._robot.ensure_client(RobotCommandClient.default_service_name)
+		self._license_client = self._robot.ensure_client(LicenseClient.default_service_name)
 
 	def on_exit(self, userdata):
 		# This method is called when an outcome is returned and another state gets active.
