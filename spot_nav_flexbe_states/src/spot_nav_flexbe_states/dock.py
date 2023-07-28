@@ -54,24 +54,40 @@ class Dock(EventState):
             print('This robot is not licensed for docking.')
             sys.exit(1)
 
-        if self._should_dock:
-            print("docking the robot at ", self._dock_id)
-            robot_command.blocking_stand(userdata.robot_command_client)
-            blocking_dock_robot(userdata.robot, self._dock_id)
-            self._return_failure = False
-            print("successfully docked the robot at the given dock id............................")
-        else:
-            print("undocking the robot....................")
-            dock_id = get_dock_id(userdata.robot)
-            if dock_id != self._dock_id:
-                print("dock ids doesn't match..........................")
-                self._return_failure = True
-            else:
-                blocking_undock(userdata.robot)
-                self._return_failure = False
-                print("successfully undocked the robot from dock id ", dock_id, "......................")
+        with LeaseKeepAlive(userdata.lease): #, must_acquire=True, return_at_exit=True):
         
+        # print("acquiring the lease..............")
+        # lease_obj = userdata.lease.acquire()
+        # print("acquired the lease..............")
+        
+            userdata.robot.power_on()
+            
+            if self._should_dock:
+                print("docking the robot at ", self._dock_id)
+                robot_command.blocking_stand(userdata.robot_command_client)
+                blocking_dock_robot(userdata.robot, self._dock_id)
+                self._return_failure = False
+                print("successfully docked the robot at the given dock id............................")
+            else:
+                print("undocking the robot....................")
+                dock_id = get_dock_id(userdata.robot)
+                print("dock_id found is ", dock_id)
+                print("dock_id given is ", self._dock_id)
+                if dock_id != self._dock_id:
+                    print("dock ids doesn't match..........................")
+                    self._return_failure = True
+                else:
+                    blocking_undock(userdata.robot)
+                    self._return_failure = False
+                    print("successfully undocked the robot from dock id ", dock_id, "......................")
+        
+        # print("returning the lease................")
+        # userdata.lease.return_lease(lease_obj)
+        # print("returned the lease................")
+            
         print("done on enter............")
+        
+        
 
 
     def on_exit(self, userdata):

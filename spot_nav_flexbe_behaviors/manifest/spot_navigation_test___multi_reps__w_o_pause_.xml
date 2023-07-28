@@ -26,7 +26,7 @@
 
 		<param type="numeric" name="reps" default="0" label="reps" hint="Sets the reps">
 			<min value="0" />
-			<max value="1" />
+			<max value="5" />
 		</param>
 
 	</params>

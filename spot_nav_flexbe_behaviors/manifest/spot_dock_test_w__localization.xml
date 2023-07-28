@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Dock Test w/ Localization">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_dock_test_w__localization_sm" class="SpotDockTestwLocalizationSM" />
+	<tagstring>Docking Test</tagstring>
+	<author>Yash P</author>
+	<date>Mon Jul 10 2023</date>
+	<description>
+		Spot Dock Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="dock" default="False" label="dock" hint="Sets the dock" />
+
+		<param type="numeric" name="dock_id" default="0" label="dock_id" hint="Sets the dock_id">
+			<min value="0" />
+			<max value="1" />
+		</param>
+
+		<param type="text" name="waypoint_id" default="" label="waypoint_id" hint="Sets the waypoint_id" />
+
+	</params>
+
+
+</behavior>

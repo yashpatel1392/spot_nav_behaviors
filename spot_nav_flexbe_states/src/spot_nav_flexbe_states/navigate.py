@@ -67,6 +67,7 @@ class NavigateTo(EventState):
 		is_powered_on = self.check_is_powered_on(state_client)
 		if not is_powered_on and should_power_on:
 			# Power on the robot up before navigating when it is in a powered-off state.
+			print("not powered on, should power on....................")
 			power_on_motors(power_client)
 			motors_on = False
 			while not motors_on:
@@ -81,11 +82,15 @@ class NavigateTo(EventState):
 		elif is_powered_on and not should_power_on:
 			# Safe power off (robot will sit then power down) when it is in a
 			# powered-on state.
+			print("----------------------- SITTING DOWN THE ROBOT -------------------------")
+			time.sleep(5)
 			safe_power_off_motors(robot_command_client, state_client)
 		else:
 			# Return the current power state without change.
+			print("else block.............")
 			return is_powered_on
-		# Update the locally stored power state.
+		
+  		# Update the locally stored power state.
 		self.check_is_powered_on(state_client)
 		return self._powered_on
 
@@ -94,12 +99,14 @@ class NavigateTo(EventState):
 		# Main purpose is to check state conditions and trigger a corresponding outcome.
 		# If no outcome is returned, the state will stay active.
   
-		print("acquiring the lease.........................................")
-		with LeaseKeepAlive(userdata.lease, must_acquire=True, return_at_exit=True):
-			print("turning the power on...........................................")
-			if not self.toggle_power(should_power_on=True, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client):
-				print("not powered on..........")
-				return 'failed'
+		
+		with LeaseKeepAlive(userdata.lease): #, must_acquire=True, return_at_exit=True):
+			print("checking power status.....")
+			if not self.check_is_powered_on(userdata.state_client):
+				print("turning the power on...........................................")
+				if not self.toggle_power(should_power_on=True, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client):
+					print("not powered on..........")
+					return 'failed'
 
 			nav_to_cmd_id = None
 			is_finished = False
@@ -120,19 +127,18 @@ class NavigateTo(EventState):
 				is_finished = self._check_success(nav_to_cmd_id, userdata.graph_nav_client)
 				print("is_finished AFTER checking: ", is_finished)
 
-			if self._powered_on and not self._started_powered_on:
-				print("turning power down..........................")
-				self.toggle_power(should_power_on=False, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client)
+			# if self._powered_on and not self._started_powered_on:
+			# 	print("turning power down..........................")
+			# 	self.toggle_power(should_power_on=False, state_client=userdata.state_client, power_client=userdata.power_client, robot_command_client=userdata.robot_command_client)
 
 			print("powered off.........")
- 
+  
 		return 'continue' # One of the outcomes declared above.
 		
 
 	def on_enter(self, userdata):
 		# This method is called when the state becomes active, i.e. a transition from another state to this one is taken.
 		# It is primarily used to start actions which are associated with this state.
-
 		power_state = userdata.state_client.get_robot_state().power_state
 		self._started_powered_on = (power_state.motor_power_state == power_state.STATE_ON)
 		self._powered_on = self._started_powered_on

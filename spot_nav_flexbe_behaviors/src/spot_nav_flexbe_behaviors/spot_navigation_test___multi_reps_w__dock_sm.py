@@ -9,8 +9,10 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from spot_nav_flexbe_states.counter import CounterState
+from spot_nav_flexbe_states.dock import Dock
 from spot_nav_flexbe_states.localize import Localize
 from spot_nav_flexbe_states.navigate import NavigateTo
+from spot_nav_flexbe_states.return_lease import ReturnLease
 from spot_nav_flexbe_states.setup_spot import SetupSpot
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -19,25 +21,26 @@ from spot_nav_flexbe_states.setup_spot import SetupSpot
 
 
 '''
-Created on Mon Jun 26 2023
+Created on Mon July 20 2023
 @author: Yash P
 '''
-class SpotNavigationTestMultiRepswoPauseSM(Behavior):
+class SpotNavigationTestMultiRepswDockSM(Behavior):
 	'''
-	Spot Navigation Test
+	Spot Navigation Test Dock
 	'''
 
 
 	def __init__(self):
-		super(SpotNavigationTestMultiRepswoPauseSM, self).__init__()
-		self.name = 'Spot Navigation Test - Multi Reps (w/o Pause)'
+		super(SpotNavigationTestMultiRepswDockSM, self).__init__()
+		self.name = 'Spot Navigation Test - Multi Reps w/ Dock'
 
 		# parameters of this behavior
-		self.add_parameter('init_waypoint_id', 'eighty-drum-3hz7jJNJ81RLN5fJavoEhg==')
-		self.add_parameter('goal_waypoint_id', 'cushy-dodo-SrmNEAcdcTsAepg.hh0FkA==')
+		self.add_parameter('init_waypoint_id', 'healed-bobcat-T1nIxvFP55eD3JyB4K4R2A==')
+		self.add_parameter('goal_waypoint_id', 'famous-seal-FL7nlT7iMBqWH0dVVFpFeg==')
 		self.add_parameter('true', True)
 		self.add_parameter('false', False)
-		self.add_parameter('reps', 0)
+		self.add_parameter('reps', 1)
+		self.add_parameter('dock_id', 520)
 
 		# references to used behaviors
 
@@ -51,7 +54,7 @@ class SpotNavigationTestMultiRepswoPauseSM(Behavior):
 
 
 	def create(self):
-		# x:851 y:143, x:458 y:267
+		# x:752 y:399, x:441 y:272
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.num_reps_IN = self.reps
 
@@ -85,7 +88,7 @@ class SpotNavigationTestMultiRepswoPauseSM(Behavior):
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
 
-			# x:770 y:194
+			# x:842 y:205
 			OperatableStateMachine.add('NavigateToStartPos',
 										NavigateTo(destination_waypoint=self.init_waypoint_id),
 										transitions={'continue': 'DecrementCounter', 'failed': 'failed'},
@@ -95,24 +98,45 @@ class SpotNavigationTestMultiRepswoPauseSM(Behavior):
 
 
 		with _state_machine:
-			# x:118 y:99
-			OperatableStateMachine.add('Setup',
+			# x:86 y:55
+			OperatableStateMachine.add('SetupSpot',
 										SetupSpot(),
-										transitions={'continue': 'Localize', 'failed': 'failed'},
+										transitions={'continue': 'Undock', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot', 'lease_obj': 'lease_obj'})
 
-			# x:435 y:17
+			# x:1144 y:141
+			OperatableStateMachine.add('Dock',
+										Dock(should_dock=self.true, dock_id=self.dock_id),
+										transitions={'continue': 'ReturnLease', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+
+			# x:710 y:6
 			OperatableStateMachine.add('Localize',
 										Localize(initial_waypoint=self.init_waypoint_id),
 										transitions={'continue': 'Container', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client'})
 
-			# x:628 y:131
+			# x:924 y:268
+			OperatableStateMachine.add('ReturnLease',
+										ReturnLease(),
+										transitions={'continue': 'finished', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
+
+			# x:319 y:20
+			OperatableStateMachine.add('Undock',
+										Dock(should_dock=self.false, dock_id=self.dock_id),
+										transitions={'continue': 'Localize', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+
+			# x:960 y:27
 			OperatableStateMachine.add('Container',
 										_sm_container_0,
-										transitions={'finished': 'finished', 'failed': 'failed'},
+										transitions={'finished': 'Dock', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'num_reps_IN': 'num_reps_IN'})
 

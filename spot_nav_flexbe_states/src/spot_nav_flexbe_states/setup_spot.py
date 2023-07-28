@@ -25,7 +25,7 @@ class SetupSpot(EventState):
 	def __init__(self):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 		super(SetupSpot, self).__init__(outcomes = ['continue', 'failed'],
-                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'license_client', 'robot'])
+                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'license_client', 'robot', 'lease_obj'])
 		self._sdk = None
 		self._robot = None
 		self._lease = None
@@ -34,6 +34,7 @@ class SetupSpot(EventState):
 		self._power_client = None
 		self._robot_command_client = None
 		self._license_client = None
+		self._lease_obj = None
 
 
 	def execute(self, userdata):
@@ -42,6 +43,8 @@ class SetupSpot(EventState):
 			# userdata.sdk = self._sdk
 			# userdata.robot = self._robot
 			# userdata.lease = self._lease
+		self._lease_obj = self._lease.acquire()
+		userdata.lease_obj = self._lease_obj
 		userdata.state_client = self._state_client
 		userdata.graph_nav_client = self._graph_nav_client
 		userdata.lease = self._lease
@@ -49,7 +52,6 @@ class SetupSpot(EventState):
 		userdata.robot_command_client = self._robot_command_client
 		userdata.license_client = self._license_client
 		userdata.robot = self._robot
-		print("in the lease keep alive block.................")
 		return 'continue'
 		
 

@@ -8,7 +8,8 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from spot_nav_flexbe_states.localize import Localize
+from spot_nav_flexbe_states.dock import Dock
+from spot_nav_flexbe_states.return_lease import ReturnLease
 from spot_nav_flexbe_states.setup_spot import SetupSpot
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -17,21 +18,22 @@ from spot_nav_flexbe_states.setup_spot import SetupSpot
 
 
 '''
-Created on Mon Jun 26 2023
+Created on Mon Jul 10 2023
 @author: Yash P
 '''
-class SpotLocalizationTestSM(Behavior):
+class SpotDockTestSM(Behavior):
 	'''
-	Spot Localization Test
+	Spot Dock Test
 	'''
 
 
 	def __init__(self):
-		super(SpotLocalizationTestSM, self).__init__()
-		self.name = 'Spot Localization Test'
+		super(SpotDockTestSM, self).__init__()
+		self.name = 'Spot Dock Test'
 
 		# parameters of this behavior
-		self.add_parameter('init_waypoint', 'eighty-drum-3hz7jJNJ81RLN5fJavoEhg==')
+		self.add_parameter('dock', False)
+		self.add_parameter('dock_id', 0)
 
 		# references to used behaviors
 
@@ -45,7 +47,7 @@ class SpotLocalizationTestSM(Behavior):
 
 
 	def create(self):
-		# x:835 y:206, x:372 y:400
+		# x:904 y:178, x:351 y:310
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -55,19 +57,26 @@ class SpotLocalizationTestSM(Behavior):
 
 
 		with _state_machine:
-			# x:121 y:126
+			# x:159 y:90
 			OperatableStateMachine.add('Setup',
 										SetupSpot(),
-										transitions={'continue': 'Localize', 'failed': 'failed'},
+										transitions={'continue': 'Dock', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot', 'lease_obj': 'lease_obj'})
 
-			# x:500 y:127
-			OperatableStateMachine.add('Localize',
-										Localize(initial_waypoint=self.init_waypoint),
+			# x:717 y:78
+			OperatableStateMachine.add('ReturnLease',
+										ReturnLease(),
 										transitions={'continue': 'finished', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client'})
+										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
+
+			# x:460 y:35
+			OperatableStateMachine.add('Dock',
+										Dock(should_dock=self.dock, dock_id=self.dock_id),
+										transitions={'continue': 'ReturnLease', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
 
 
 		return _state_machine
