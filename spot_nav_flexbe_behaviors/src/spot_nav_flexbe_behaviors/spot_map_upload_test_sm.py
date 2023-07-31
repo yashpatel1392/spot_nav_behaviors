@@ -8,10 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from spot_nav_flexbe_states.acquire_lease import AcquireLease
-from spot_nav_flexbe_states.dock import Dock
 from spot_nav_flexbe_states.return_lease import ReturnLease
 from spot_nav_flexbe_states.setup_spot import SetupSpot
+from spot_nav_flexbe_states.upload_map import UploadMap
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -19,22 +18,22 @@ from spot_nav_flexbe_states.setup_spot import SetupSpot
 
 
 '''
-Created on Mon Jul 10 2023
+Created on Mon Jul 31 2023
 @author: Yash P
 '''
-class SpotDockTestSM(Behavior):
+class SpotMapUploadTestSM(Behavior):
 	'''
-	Spot Dock Test
+	Spot Map Upload Test
 	'''
 
 
 	def __init__(self):
-		super(SpotDockTestSM, self).__init__()
-		self.name = 'Spot Dock Test'
+		super(SpotMapUploadTestSM, self).__init__()
+		self.name = 'Spot Map Upload Test'
 
 		# parameters of this behavior
-		self.add_parameter('dock', False)
-		self.add_parameter('dock_id', 0)
+		self.add_parameter('graph_path', 'spot-sdk/spot_maps/nerve_first_floor_map/downloaded_graph')
+		self.add_parameter('upload_graph', False)
 
 		# references to used behaviors
 
@@ -48,7 +47,7 @@ class SpotDockTestSM(Behavior):
 
 
 	def create(self):
-		# x:904 y:178, x:522 y:318
+		# x:904 y:114, x:331 y:244
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -58,31 +57,24 @@ class SpotDockTestSM(Behavior):
 
 
 		with _state_machine:
-			# x:65 y:178
-			OperatableStateMachine.add('Setup',
+			# x:132 y:59
+			OperatableStateMachine.add('SetupSpot',
 										SetupSpot(),
-										transitions={'continue': 'AcquireLease', 'failed': 'failed'},
+										transitions={'continue': 'UploadMap', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot', 'lease_obj': 'lease_obj'})
 
-			# x:554 y:17
-			OperatableStateMachine.add('Dock',
-										Dock(should_dock=self.dock, dock_id=self.dock_id),
-										transitions={'continue': 'ReturnLease', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
+			# x:425 y:27
+			OperatableStateMachine.add('UploadMap',
+										UploadMap(path_to_graph=self.graph_path, should_upload=self.upload_graph),
+										transitions={'success': 'ReturnLease', 'failed': 'failed'},
+										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'graph_nav_client': 'graph_nav_client'})
 
-			# x:779 y:71
+			# x:687 y:33
 			OperatableStateMachine.add('ReturnLease',
 										ReturnLease(),
 										transitions={'continue': 'finished', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
-
-			# x:280 y:32
-			OperatableStateMachine.add('AcquireLease',
-										AcquireLease(),
-										transitions={'continue': 'Dock', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
 

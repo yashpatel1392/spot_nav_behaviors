@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Image Capture Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_image_capture_test_sm" class="SpotImageCaptureTestSM" />
+	<tagstring>Spot Image Capture Test</tagstring>
+	<author>Yash P</author>
+	<date>Mon Jul 31 2023</date>
+	<description>
+		Spot Image Capture Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="numeric" name="dock_id" default="520" label="dock_id" hint="Sets the dock_id">
+			<min value="0" />
+			<max value="520" />
+		</param>
+
+		<param type="text" name="path" default="../spot_images" label="path" hint="Sets the path" />
+
+	</params>
+
+
+</behavior>

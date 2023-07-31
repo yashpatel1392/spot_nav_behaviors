@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Folder Upload Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.folder_upload_test_sm" class="FolderUploadTestSM" />
+	<tagstring>Folder Upload Test</tagstring>
+	<author>Yash P</author>
+	<date>Mon Jul 31 2023</date>
+	<description>
+		Folder Upload Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="graph_path" default="" label="graph_path" hint="Sets the graph_path" />
+
+	</params>
+
+
+</behavior>

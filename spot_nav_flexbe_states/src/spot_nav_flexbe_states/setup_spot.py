@@ -9,6 +9,8 @@ from bosdyn.client.graph_nav import GraphNavClient
 from bosdyn.client.power import PowerClient
 from bosdyn.client.robot_command import RobotCommandBuilder, RobotCommandClient
 from bosdyn.client.license import LicenseClient
+from bosdyn.client.image import ImageClient
+
 
 class SetupSpot(EventState):
 	'''
@@ -25,7 +27,7 @@ class SetupSpot(EventState):
 	def __init__(self):
 		# Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 		super(SetupSpot, self).__init__(outcomes = ['continue', 'failed'],
-                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'license_client', 'robot', 'lease_obj'])
+                                  		output_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'license_client', 'robot', 'image_client'])
 		self._sdk = None
 		self._robot = None
 		self._lease = None
@@ -34,7 +36,7 @@ class SetupSpot(EventState):
 		self._power_client = None
 		self._robot_command_client = None
 		self._license_client = None
-		self._lease_obj = None
+		self._image_client = None
 
 
 	def execute(self, userdata):
@@ -43,8 +45,7 @@ class SetupSpot(EventState):
 			# userdata.sdk = self._sdk
 			# userdata.robot = self._robot
 			# userdata.lease = self._lease
-		self._lease_obj = self._lease.acquire()
-		userdata.lease_obj = self._lease_obj
+		
 		userdata.state_client = self._state_client
 		userdata.graph_nav_client = self._graph_nav_client
 		userdata.lease = self._lease
@@ -52,6 +53,7 @@ class SetupSpot(EventState):
 		userdata.robot_command_client = self._robot_command_client
 		userdata.license_client = self._license_client
 		userdata.robot = self._robot
+		userdata.image_client = self._image_client
 		return 'continue'
 		
 
@@ -90,6 +92,7 @@ class SetupSpot(EventState):
 		self._power_client = self._robot.ensure_client(PowerClient.default_service_name)
 		self._robot_command_client = self._robot.ensure_client(RobotCommandClient.default_service_name)
 		self._license_client = self._robot.ensure_client(LicenseClient.default_service_name)
+		self._image_client = self._robot.ensure_client(ImageClient.default_service_name)
 
 	def on_exit(self, userdata):
 		# This method is called when an outcome is returned and another state gets active.
