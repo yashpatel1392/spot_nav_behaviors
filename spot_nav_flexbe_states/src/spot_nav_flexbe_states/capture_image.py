@@ -12,6 +12,7 @@ from bosdyn.client.license import LicenseClient
 from bosdyn.client.image import ImageClient
 import time, os, io
 from PIL import Image
+from datetime import datetime
 
 
 class CaptureImage(EventState):
@@ -31,19 +32,23 @@ class CaptureImage(EventState):
         super(CaptureImage, self).__init__(outcomes = ['continue', 'failed'],
                                             input_keys = ['image_client'])
         self._path = path
+        self._source_list = []
 
-    def _save_image(self, image, path):
-        name = 'front-cam-capture.jpg'
+    def _save_image(self, image, path, source_name):
+        currentDateTime = datetime.now()
+        currentTime = currentDateTime.strftime("%H:%M:%S")
+        
+        name = source_name + "_" + currentTime + ".jpg"
         if path is not None and os.path.exists(path):
             path = os.path.join(os.getcwd(), path)
             name = os.path.join(path, name)
-            print("Saving image to: ", name)
         else:
             print("Saving image to working directory as ", name)
 
         try:
             image = Image.open(io.BytesIO(image.data))
             image.save(name)
+            print("Saving image to: ", name)
         except Exception as exc:
             logger = bosdyn.client.util.get_logger()
             logger.warning('Exception thrown saving image. %r', exc)
@@ -58,15 +63,29 @@ class CaptureImage(EventState):
         # It is primarily used to start actions which are associated with this state.
         
         # Following code can be used for listing image sources
-        
         # img_sources = userdata.image_client.list_image_sources()
         # print("----------------------------------------------------\n\n")
         # print("Image Sources:\n")
         # print(img_sources)
         # print("----------------------------------------------------\n")
         
-        image_response = userdata.image_client.get_image_from_sources(['frontleft_fisheye_image'])
-        self._save_image(image_response[0].shot.image, self._path)
+        self._source_list = ['back_depth', 'back_depth_in_visual_frame', 'back_fisheye_image', 'frontleft_depth', 
+                             'frontleft_depth_in_visual_frame', 'frontleft_fisheye_image', 'frontright_depth',
+                             'frontright_depth_in_visual_frame', 'frontright_fisheye_image', 'hand_color_image',
+                             'hand_color_in_hand_depth_frame', 'hand_depth', 'hand_depth_in_hand_color_frame',
+                             'hand_image', 'left_depth', 'left_depth_in_visual_frame', 'left_fisheye_image',
+                             'right_depth', 'right_depth_in_visual_frame', 'right_fisheye_image']
+        
+        currentDateTime = datetime.now()
+        currentTime = currentDateTime.strftime("%H:%M:%S")
+
+        self._path = self._path + "/" + str(currentDateTime.month) + "-" + str(currentDateTime.day) + "-" + str(currentDateTime.year) + "/" +  currentTime
+        if not os.path.exists(self._path):
+            os.makedirs(self._path)        
+
+        for source in self._source_list:
+            image_response = userdata.image_client.get_image_from_sources([source])      
+            self._save_image(image_response[0].shot.image, self._path, source)
        
 
     def on_exit(self, userdata):
