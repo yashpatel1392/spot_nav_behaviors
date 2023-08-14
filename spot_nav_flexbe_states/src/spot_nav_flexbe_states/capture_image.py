@@ -13,42 +13,56 @@ from bosdyn.client.image import ImageClient
 import time, os, io
 from PIL import Image
 from datetime import datetime
+from scipy import ndimage
+from bosdyn.api import image_pb2
 
 
 class CaptureImage(EventState):
     '''
-    Example for a state to demonstrate which functionality is available for state implementation.
-    This example lets the behavior wait until the given target_time has passed since the behavior has been started.
+    sources: all (for getting images from all of the following sources), back_fisheye_image, frontleft_fisheye_image, frontright_fisheye_image, hand_color_image, left_fisheye_image, right_fisheye_image
 
-    -- target_time 	float 	Time which needs to have passed since the behavior started.
+    -- image_source 	string 	    specify the image source(s) to capture image from 
 
     <= continue 			Given time has passed.
     <= failed 				Example for a failure outcome.
 
     '''
 
-    def __init__(self, path):
+    def __init__(self, path, image_source):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
         super(CaptureImage, self).__init__(outcomes = ['continue', 'failed'],
                                             input_keys = ['image_client'])
         self._path = path
-        self._source_list = []
+        self._angle_dict = {
+            'back_fisheye_image': 0,
+            'frontleft_fisheye_image': -78,
+            'frontright_fisheye_image': -102,
+            'left_fisheye_image': 0,
+            'right_fisheye_image': 180
+        }
+        self._image_source = image_source
 
     def _save_image(self, image, path, source_name):
         currentDateTime = datetime.now()
-        currentTime = currentDateTime.strftime("%H:%M:%S")
+        currentTime = currentDateTime.strftime("%H-%M-%S")
+                
+        name = str(currentDateTime.month) + "-" + str(currentDateTime.day) + "-" + str(currentDateTime.year) + "_" + currentTime + "_" + source_name + ".jpg"
         
-        name = source_name + "_" + currentTime + ".jpg"
         if path is not None and os.path.exists(path):
             path = os.path.join(os.getcwd(), path)
             name = os.path.join(path, name)
-        else:
-            print("Saving image to working directory as ", name)
 
         try:
             image = Image.open(io.BytesIO(image.data))
             image.save(name)
             print("Saving image to: ", name)
+            if self._angle_dict[source_name] != 0:
+                rotated_image = image.rotate(self._angle_dict[source_name])
+                rotated_img_name = str(currentDateTime.month) + "-" + str(currentDateTime.day) + "-" + str(currentDateTime.year) + "_" + currentTime + "_" + source_name + "_ROTATED.jpg"
+                rotated_img_name = os.path.join(path, rotated_img_name)
+                rotated_image.save(rotated_img_name)
+                print("Saving rotated image to: ", name)
+                
         except Exception as exc:
             logger = bosdyn.client.util.get_logger()
             logger.warning('Exception thrown saving image. %r', exc)
@@ -69,22 +83,21 @@ class CaptureImage(EventState):
         # print(img_sources)
         # print("----------------------------------------------------\n")
         
-        self._source_list = ['back_depth', 'back_depth_in_visual_frame', 'back_fisheye_image', 'frontleft_depth', 
-                             'frontleft_depth_in_visual_frame', 'frontleft_fisheye_image', 'frontright_depth',
-                             'frontright_depth_in_visual_frame', 'frontright_fisheye_image', 'hand_color_image',
-                             'hand_color_in_hand_depth_frame', 'hand_depth', 'hand_depth_in_hand_color_frame',
-                             'hand_image', 'left_depth', 'left_depth_in_visual_frame', 'left_fisheye_image',
-                             'right_depth', 'right_depth_in_visual_frame', 'right_fisheye_image']
+        # currentDateTime = datetime.now()
+        # currentTime = currentDateTime.strftime("%H:%M:%S")
+        # self._path = self._path + "/" + str(currentDateTime.month) + "-" + str(currentDateTime.day) + "-" + str(currentDateTime.year) + "/" +  currentTime
         
-        currentDateTime = datetime.now()
-        currentTime = currentDateTime.strftime("%H:%M:%S")
-
-        self._path = self._path + "/" + str(currentDateTime.month) + "-" + str(currentDateTime.day) + "-" + str(currentDateTime.year) + "/" +  currentTime
         if not os.path.exists(self._path):
-            os.makedirs(self._path)        
+            os.makedirs(self._path)
+            
+        if self._image_source == 'all':
+            self._source_list = ['back_fisheye_image', 'frontleft_fisheye_image', 'frontright_fisheye_image', 
+                                'hand_color_image', 'left_fisheye_image', 'right_fisheye_image']
+        else:
+            self._source_list = self._image_source.split(', ')
 
         for source in self._source_list:
-            image_response = userdata.image_client.get_image_from_sources([source])      
+            image_response = userdata.image_client.get_image_from_sources([source])
             self._save_image(image_response[0].shot.image, self._path, source)
        
 

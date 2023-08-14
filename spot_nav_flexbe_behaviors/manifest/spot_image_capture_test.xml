@@ -27,6 +27,8 @@
 
 		<param type="text" name="path" default="../spot_images" label="path" hint="Sets the path" />
 
+		<param type="text" name="image_source" default="" label="image_source" hint="Sets the image_source" />
+
 	</params>
 
 
