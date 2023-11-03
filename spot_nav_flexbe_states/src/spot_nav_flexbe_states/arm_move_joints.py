@@ -81,7 +81,7 @@ class ArmMoveJoints(EventState):
             
             feedback_resp = userdata.robot_command_client.robot_command_feedback(cmd_id)
             print("------------------------------------------------------------------------------------------")
-            print('Feedback for Example 1: single point goto')           
+            print('Feedback: ')           
             time_to_goal = self.print_feedback(feedback_resp)
             print("------------------------------------------------------------------------------------------\n")         
                         
