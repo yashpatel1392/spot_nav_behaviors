@@ -44,11 +44,13 @@ class ArmStowUnstow(EventState):
                 stow = RobotCommandBuilder.arm_stow_command()
                 stow_command_id = userdata.robot_command_client.robot_command(stow)
                 block_until_arm_arrives(userdata.robot_command_client, stow_command_id, 3.0)
+                userdata.robot.logger.info('Arm is stowed......................')
             else:
                 print("Unstowing the arm..........................")
                 unstow = RobotCommandBuilder.arm_ready_command()
                 unstow_command_id = userdata.robot_command_client.robot_command(unstow)
                 block_until_arm_arrives(userdata.robot_command_client, unstow_command_id, 3.0)
+                userdata.robot.logger.info('Arm is unstowed...................')
         
         return 'success'
 
