@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Swap Lease Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.swap_lease_test_sm" class="SwapLeaseTestSM" />
+	<tagstring>Swap Lease Test</tagstring>
+	<author>Yash P</author>
+	<date>Tue Nov 21 2023</date>
+	<description>
+		Swap Lease Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="numeric" name="dock_id" default="520" label="dock_id" hint="Sets the dock_id">
+			<min value="0" />
+			<max value="520" />
+		</param>
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="text" name="topic" default="cont" label="topic" hint="Sets the topic" />
+
+	</params>
+
+
+</behavior>

@@ -3,7 +3,7 @@
 from flexbe_core import EventState
 from flexbe_core.proxy import ProxySubscriberCached, ProxyPublisher
 from std_msgs.msg import String
-
+import time, json
 
 class PauseState(EventState):
     """
@@ -20,7 +20,8 @@ class PauseState(EventState):
     def __init__(self, topic):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 
-        super(PauseState, self).__init__(outcomes=['success'])
+        super(PauseState, self).__init__(outcomes=['success'],
+                                         input_keys = ['state_client'])
         self._topic = topic
         self._sub = ProxySubscriberCached({self._topic: String})
         self._pub = ProxyPublisher({self._topic: String})
@@ -31,12 +32,17 @@ class PauseState(EventState):
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
 
+        print("\n\n**************************************************************")
         if self._topic:
             if self._sub.has_msg(self._topic):
                 self._data = self._sub.get_last_msg(self._topic)
                 if self._data.data == "continue":
                     return 'success'
-        
+            else:
+                enter = input("Hit enter to get robot state................")
+                print("----------------------------------------------------------------")     
+                print(userdata.state_client.get_robot_state())
+                print("----------------------------------------------------------------") 
 
     def on_enter(self, userdata):
         # This method is called when the state becomes active, i.e. a transition from another state to this one is taken.

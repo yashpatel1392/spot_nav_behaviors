@@ -28,7 +28,7 @@ class ArmMoveJoints(EventState):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 
         super(ArmMoveJoints, self).__init__(outcomes=['success', 'failure'],
-                                            input_keys=['robot_command_client', 'robot', 'lease'])
+                                            input_keys=['robot_command_client', 'robot', 'lease', 'state_client'])
         self._sh0 = float(sh0)
         self._sh1 = float(sh1)
         self._el0 = float(el0)
@@ -72,6 +72,8 @@ class ArmMoveJoints(EventState):
             unstow = RobotCommandBuilder.arm_ready_command()
             unstow_command_id = userdata.robot_command_client.robot_command(unstow)
             block_until_arm_arrives(userdata.robot_command_client, unstow_command_id, 3.0)
+            print("---------------------------------")
+            print("\n\nRobot State: ", userdata.state_client.get_robot_state())
             
             print(f'\nMoving the arm to the given joint positions: sh0: [{self._sh0}], sh1: [{self._sh1}], el0: [{self._el0}], el1: [{self._el1}], wr0: [{self._wr0}], wr1: [{self._wr1}]\n')            
             traj_point = RobotCommandBuilder.create_arm_joint_trajectory_point(self._sh0, self._sh1, self._el0, self._el1, self._wr0, self._wr1)
@@ -86,6 +88,7 @@ class ArmMoveJoints(EventState):
             print("------------------------------------------------------------------------------------------\n")         
                         
             block_until_arm_arrives(userdata.robot_command_client, cmd_id, time_to_goal + 3.0)
+            print("\n\nRobot State: ", userdata.state_client.get_robot_state())
             
             print("Stowing the arm..........................")
             stow = RobotCommandBuilder.arm_stow_command()
