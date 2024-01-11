@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Wait Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.wait_test_sm" class="WaitTestSM" />
+	<tagstring>Wait Test</tagstring>
+	<author>Yash P</author>
+	<date>Thu Jan 11 2024</date>
+	<description>
+		Wait Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="wait_time" default="" label="wait_time" hint="Sets the wait_time" />
+
+	</params>
+
+
+</behavior>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Sit/Stand Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_sit_stand_test_sm" class="SpotSitStandTestSM" />
+	<tagstring>Spot Sit/Stand Test</tagstring>
+	<author>Yash P</author>
+	<date>Thu January 11 2024</date>
+	<description>
+		Spot Sit/Stand Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="numeric" name="waittime" default="10" label="waittime" hint="Sets the waittime">
+			<min value="0" />
+			<max value="10" />
+		</param>
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+	</params>
+
+
+</behavior>

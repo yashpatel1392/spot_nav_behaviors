@@ -68,10 +68,11 @@ class ArmMoveJoints(EventState):
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
         with LeaseKeepAlive(userdata.lease):
-            print("Unstowing the arm..........................")
-            unstow = RobotCommandBuilder.arm_ready_command()
-            unstow_command_id = userdata.robot_command_client.robot_command(unstow)
-            block_until_arm_arrives(userdata.robot_command_client, unstow_command_id, 3.0)
+            # print("Unstowing the arm..........................")
+            # unstow = RobotCommandBuilder.arm_ready_command()
+            # unstow_command_id = userdata.robot_command_client.robot_command(unstow)
+            # block_until_arm_arrives(userdata.robot_command_client, unstow_command_id, 3.0)
+            
             print("---------------------------------")
             print("\n\nRobot State: ", userdata.state_client.get_robot_state())
             
@@ -90,10 +91,10 @@ class ArmMoveJoints(EventState):
             block_until_arm_arrives(userdata.robot_command_client, cmd_id, time_to_goal + 3.0)
             print("\n\nRobot State: ", userdata.state_client.get_robot_state())
             
-            print("Stowing the arm..........................")
-            stow = RobotCommandBuilder.arm_stow_command()
-            stow_command_id = userdata.robot_command_client.robot_command(stow)
-            block_until_arm_arrives(userdata.robot_command_client, stow_command_id, 3.0)
+            # print("Stowing the arm..........................")
+            # stow = RobotCommandBuilder.arm_stow_command()
+            # stow_command_id = userdata.robot_command_client.robot_command(stow)
+            # block_until_arm_arrives(userdata.robot_command_client, stow_command_id, 3.0)
 
         return 'success'
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Process Image">
+
+	<executable package_path="spot_nav_flexbe_behaviors.process_image_sm" class="ProcessImageSM" />
+	<tagstring>Process Image</tagstring>
+	<author>Yash P</author>
+	<date>Thu Jan 11 2024</date>
+	<description>
+		Process Image
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="text" name="path" default="../spot_images" label="path" hint="Sets the path" />
+
+		<param type="text" name="image_source" default="frontleft_fisheye_image" label="image_source" hint="Sets the image_source" />
+
+	</params>
+
+
+</behavior>

@@ -31,7 +31,8 @@ class CaptureImage(EventState):
     def __init__(self, path, image_source):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
         super(CaptureImage, self).__init__(outcomes = ['continue', 'failed'],
-                                            input_keys = ['image_client'])
+                                            input_keys = ['image_client'],
+                                            output_keys = ['image_response'])
         self._path = path
         self._angle_dict = {
             'back_fisheye_image': 0,
@@ -98,6 +99,7 @@ class CaptureImage(EventState):
 
         for source in self._source_list:
             image_response = userdata.image_client.get_image_from_sources([source])
+            userdata.image_response = image_response
             self._save_image(image_response[0].shot.image, self._path, source)
        
 

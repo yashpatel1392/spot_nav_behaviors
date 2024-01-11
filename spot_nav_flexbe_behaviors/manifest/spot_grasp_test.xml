@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Grasp Test">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_grasp_test_sm" class="SpotGraspTestSM" />
+	<tagstring>Spot Grasp Test</tagstring>
+	<author>Yash P</author>
+	<date>Thu January 11 2024</date>
+	<description>
+		Spot Grasp Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="text" name="sh0" default="0.0692" label="sh0" hint="Sets the sh0" />
+
+		<param type="text" name="sh1" default="-1.882" label="sh1" hint="Sets the sh1" />
+
+		<param type="text" name="el0" default="1.652" label="el0" hint="Sets the el0" />
+
+		<param type="text" name="el1" default="-0.0691" label="el1" hint="Sets the el1" />
+
+		<param type="text" name="wr0" default="1.622" label="wr0" hint="Sets the wr0" />
+
+		<param type="text" name="wr1" default="1.550" label="wr1" hint="Sets the wr1" />
+
+		<param type="text" name="path" default="../spot_images" label="path" hint="Sets the path" />
+
+		<param type="text" name="image_source" default="frontleft_fisheye_image" label="image_source" hint="Sets the image_source" />
+
+		<param type="numeric" name="wait_time" default="5" label="wait_time" hint="Sets the wait_time">
+			<min value="0" />
+			<max value="10" />
+		</param>
+
+	</params>
+
+
+</behavior>
