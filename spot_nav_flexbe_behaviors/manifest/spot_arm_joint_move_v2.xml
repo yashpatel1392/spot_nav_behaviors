@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Arm Joint Move v2">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_arm_joint_move_v2_sm" class="SpotArmJointMovev2SM" />
+	<tagstring>Spot Arm Joint Move</tagstring>
+	<author>Yash P</author>
+	<date>Fri November 3 2023</date>
+	<description>
+		Spot Arm Joint Move v2
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="text" name="arm_pose_name" default="" label="arm_pose_name" hint="Sets the arm_pose_name" />
+
+	</params>
+
+
+</behavior>

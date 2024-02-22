@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Swap Lease Test v3">
+
+	<executable package_path="spot_nav_flexbe_behaviors.swap_lease_test_v3_sm" class="SwapLeaseTestv3SM" />
+	<tagstring>Swap Lease Test v3</tagstring>
+	<author>Yash P</author>
+	<date>Tue Feb 20 2024</date>
+	<description>
+		Swap Lease Test v3
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="topic" default="cont" label="topic" hint="Sets the topic" />
+
+	</params>
+
+
+</behavior>

@@ -1,12 +1,11 @@
-
 #!/usr/bin/env python
 
 from flexbe_core import EventState
 from flexbe_core.proxy import ProxySubscriberCached, ProxyPublisher
 from std_msgs.msg import String
-import time, json
+import json, time
 
-class PauseState(EventState):
+class GetArmData(EventState):
     """
     This state continues running until a "continue" message is published to the 
     topic, whose name is passed as an input parameter. 
@@ -18,14 +17,12 @@ class PauseState(EventState):
 
     """
 
-    def __init__(self, topic):
+    def __init__(self):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 
-        super(PauseState, self).__init__(outcomes=['success'],
+        super(GetArmData, self).__init__(outcomes=['success'],
                                          input_keys = ['state_client'])
-        self._topic = topic
-        self._sub = ProxySubscriberCached({self._topic: String})
-        self._pub = ProxyPublisher({self._topic: String})
+
 
 
     def parse_arm_joints_data(self, data):
@@ -62,44 +59,46 @@ class PauseState(EventState):
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
 
+        time.sleep(0.5)
         print("\n\n**************************************************************")
+        print("- Hit Enter to print the current arm position")
+        print("- Type save to save current arm position to ~/spot-arm-positions/arm_data.json")
+        print("- Type exit to kill the program\n")
         
-        if self._topic:
-            if self._sub.has_msg(self._topic):
-                self._data = self._sub.get_last_msg(self._topic)
-                if self._data.data == "continue":
-                    return 'success'
-            else:
-                user_input = input("Hit enter to print current arm position or type save to current arm position:  ")
+        user_input = input("Enter your input:  ")
+        print()
+
+        if user_input == 'exit':
+            return 'success'
+        
+        state_data = userdata.state_client.get_robot_state()
+        arm_joint_data = self.parse_arm_joints_data(str(state_data))
+        print()
+
+        if user_input == 'save':
+            position_name = input("For saving the arm position, provide a unique name: ")
+            
+            try:
+                with open('../spot-arm-positions/arm_data.json', 'r') as file:
+                    current_data = json.load(file)
+            except (FileNotFoundError, json.decoder.JSONDecodeError):
+                current_data = {}
+            
+            if position_name in current_data:
+                print("An arm position with this name already exists: ")
+                print(current_data[position_name])
                 print()
                 
-                state_data = userdata.state_client.get_robot_state()
-                arm_joint_data = self.parse_arm_joints_data(str(state_data))
-                                     
-                if user_input == 'save':
-                    position_name = input("For saving the arm position, provide a unique name: ")
-                    
-                    try:
-                        with open('../spot-arm-positions/arm_data.json', 'r') as file:
-                            current_data = json.load(file)
-                    except (FileNotFoundError, json.decoder.JSONDecodeError):
-                        current_data = {}
-                 
-                    if position_name in current_data:
-                        print("An arm position with this name already exists: ")
-                        print(current_data[position_name])
-                        print()
-                        
-                        user_input = input("Type r to rename the current position, or Press Enter to update the existing position:  ")
-                        if user_input == 'r':
-                            position_name = input("Enter the new unique name for this arm position:  ")
-                    
-                
-                    updated_data = {position_name: arm_joint_data}
-                    current_data.update(updated_data)
-                
-                    with open('../spot-arm-positions/arm_data.json', 'w') as file:
-                        json.dump(current_data, file, indent=4)
+                user_input = input("Type r to rename the current position, or Press Enter to update the existing position:  ")
+                if user_input == 'r':
+                    position_name = input("Enter the new unique name for this arm position:  ")
+            
+        
+            updated_data = {position_name: arm_joint_data}
+            current_data.update(updated_data)
+        
+            with open('../spot-arm-positions/arm_data.json', 'w') as file:
+                json.dump(current_data, file, indent=4)
                 
 
     def on_enter(self, userdata):
@@ -109,17 +108,9 @@ class PauseState(EventState):
 
     def on_exit(self, userdata):
         # This method is called when an outcome is returned and another state gets active.
-
-        pause_msg = String()
-        pause_msg.data = "pause"
-        self._pub.publish(self._topic, pause_msg)
         pass
 
 
     def on_stop(self):
         # This method is called whenever the behavior stops execution, also if it is cancelled.
-
-        pause_msg = String()
-        pause_msg.data = "pause"
-        self._pub.publish(self._topic, pause_msg)
         pass

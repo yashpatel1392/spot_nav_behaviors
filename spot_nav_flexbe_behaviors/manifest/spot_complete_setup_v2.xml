@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<behavior name="Spot Complete Setup">
+<behavior name="Spot Complete Setup v2">
 
-	<executable package_path="spot_nav_flexbe_behaviors.spot_complete_setup_sm" class="SpotCompleteSetupSM" />
+	<executable package_path="spot_nav_flexbe_behaviors.spot_complete_setup_v2_sm" class="SpotCompleteSetupv2SM" />
 	<tagstring>Spot Navigation Test</tagstring>
 	<author>Yash P</author>
 	<date>Mon July 20 2023</date>
@@ -37,6 +37,12 @@
 		<param type="boolean" name="change_map" default="False" label="change_map" hint="Sets the change_map" />
 
 		<param type="text" name="path_to_map" default="spot-sdk/spot_maps/mini_map_back_area/downloaded_graph" label="path_to_map" hint="Sets the path_to_map" />
+
+		<param type="text" name="arm_pose_name" default="ready" label="arm_pose_name" hint="Sets the arm_pose_name" />
+
+		<param type="text" name="fraction_open" default="0.8" label="fraction_open" hint="Sets the fraction_open" />
+
+		<param type="text" name="fraction_close" default="0.0" label="fraction_close" hint="Sets the fraction_close" />
 
 	</params>
 

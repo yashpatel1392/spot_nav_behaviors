@@ -9,8 +9,11 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from spot_nav_flexbe_states.acquire_lease import AcquireLease
+from spot_nav_flexbe_states.arm_move_joints_name import ArmMoveJointsName
+from spot_nav_flexbe_states.arm_stow_unstow import ArmStowUnstow
 from spot_nav_flexbe_states.counter import CounterState
 from spot_nav_flexbe_states.dock import Dock
+from spot_nav_flexbe_states.gripper_control import GripperControl
 from spot_nav_flexbe_states.localize import Localize
 from spot_nav_flexbe_states.navigate import NavigateTo
 from spot_nav_flexbe_states.return_lease import ReturnLease
@@ -26,15 +29,15 @@ from spot_nav_flexbe_states.upload_map import UploadMap
 Created on Mon July 20 2023
 @author: Yash P
 '''
-class SpotCompleteSetupSM(Behavior):
+class SpotCompleteSetupv2SM(Behavior):
 	'''
 	Spot Navigation Test with Dock and Map Verification
 	'''
 
 
 	def __init__(self):
-		super(SpotCompleteSetupSM, self).__init__()
-		self.name = 'Spot Complete Setup'
+		super(SpotCompleteSetupv2SM, self).__init__()
+		self.name = 'Spot Complete Setup v2'
 
 		# parameters of this behavior
 		self.add_parameter('init_waypoint_id', 'blotto-guppy-Jj5vrF7oTWyVx7IRyczxqA==')
@@ -45,6 +48,9 @@ class SpotCompleteSetupSM(Behavior):
 		self.add_parameter('dock_id', 520)
 		self.add_parameter('change_map', False)
 		self.add_parameter('path_to_map', 'spot-sdk/spot_maps/mini_map_back_area/downloaded_graph')
+		self.add_parameter('arm_pose_name', 'ready')
+		self.add_parameter('fraction_open', '0.8')
+		self.add_parameter('fraction_close', '0.0')
 
 		# references to used behaviors
 
@@ -67,37 +73,65 @@ class SpotCompleteSetupSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:58 y:425, x:548 y:183
-		_sm_container_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'num_reps_IN'])
+		# x:58 y:425, x:662 y:199
+		_sm_container_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'num_reps_IN', 'robot'])
 
 		with _sm_container_0:
-			# x:153 y:74
+			# x:123 y:87
 			OperatableStateMachine.add('CounterCheck',
 										CounterState(decrement=self.false),
 										transitions={'success': 'NavigateToDest', 'failed': 'failed', 'end': 'finished'},
 										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'num_reps': 'num_reps_IN', 'num_reps_remaining': 'num_reps_OUT'})
 
-			# x:478 y:357
+			# x:293 y:237
 			OperatableStateMachine.add('DecrementCounter',
 										CounterState(decrement=self.true),
 										transitions={'success': 'CounterCheck', 'failed': 'failed', 'end': 'finished'},
 										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'num_reps': 'num_reps_OUT', 'num_reps_remaining': 'num_reps_IN'})
 
+			# x:776 y:27
+			OperatableStateMachine.add('MoveArm',
+										ArmMoveJointsName(pose_name=self.arm_pose_name),
+										transitions={'success': 'OpenGripper', 'failure': 'failed'},
+										autonomy={'success': Autonomy.Off, 'failure': Autonomy.Off},
+										remapping={'robot_command_client': 'robot_command_client', 'robot': 'robot', 'lease': 'lease', 'state_client': 'state_client'})
+
 			# x:501 y:40
 			OperatableStateMachine.add('NavigateToDest',
 										NavigateTo(destination_waypoint=self.goal_waypoint_id),
-										transitions={'continue': 'NavigateToStartPos', 'failed': 'failed'},
+										transitions={'continue': 'MoveArm', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
 
-			# x:842 y:205
+			# x:499 y:369
 			OperatableStateMachine.add('NavigateToStartPos',
 										NavigateTo(destination_waypoint=self.init_waypoint_id),
 										transitions={'continue': 'DecrementCounter', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
+
+			# x:1012 y:94
+			OperatableStateMachine.add('OpenGripper',
+										GripperControl(fraction=self.fraction_open),
+										transitions={'success': 'Close', 'failure': 'failed'},
+										autonomy={'success': Autonomy.Off, 'failure': Autonomy.Off},
+										remapping={'robot_command_client': 'robot_command_client', 'robot': 'robot', 'lease': 'lease'})
+
+			# x:787 y:388
+			OperatableStateMachine.add('StowArm',
+										ArmStowUnstow(stow=self.true),
+										transitions={'success': 'NavigateToStartPos', 'failure': 'failed'},
+										autonomy={'success': Autonomy.Off, 'failure': Autonomy.Off},
+										remapping={'robot_command_client': 'robot_command_client', 'robot': 'robot', 'lease': 'lease'})
+
+			# x:993 y:268
+			OperatableStateMachine.add('Close',
+										GripperControl(fraction=self.fraction_close),
+										transitions={'success': 'StowArm', 'failure': 'failed'},
+										autonomy={'success': Autonomy.Off, 'failure': Autonomy.Off},
+										remapping={'robot_command_client': 'robot_command_client', 'robot': 'robot', 'lease': 'lease'})
 
 
 
@@ -114,7 +148,7 @@ class SpotCompleteSetupSM(Behavior):
 										_sm_container_0,
 										transitions={'finished': 'Dock', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'num_reps_IN': 'num_reps_IN'})
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'num_reps_IN': 'num_reps_IN', 'robot': 'robot'})
 
 			# x:483 y:379
 			OperatableStateMachine.add('Dock',

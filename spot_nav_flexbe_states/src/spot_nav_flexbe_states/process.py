@@ -65,7 +65,7 @@ class ProcessImageGrasp(EventState):
                                             input_keys=['image_response'],
                                             output_keys=['click_x', 'click_y', 'image'])
         self._img = None
-        self._img_click = None
+        # self._img_click = None
         self._img_title = ''
         self._image = None
 
@@ -76,6 +76,7 @@ class ProcessImageGrasp(EventState):
         
         global g_img_click, g_img
         
+        g_img_click = None
         g_img = self._img
         cv2.imshow(self._img_title, self._img)
         

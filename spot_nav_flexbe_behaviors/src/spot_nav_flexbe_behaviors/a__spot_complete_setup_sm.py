@@ -9,7 +9,6 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from spot_nav_flexbe_states.acquire_lease import AcquireLease
-from spot_nav_flexbe_states.counter import CounterState
 from spot_nav_flexbe_states.dock import Dock
 from spot_nav_flexbe_states.localize import Localize
 from spot_nav_flexbe_states.navigate import NavigateTo
@@ -26,22 +25,21 @@ from spot_nav_flexbe_states.upload_map import UploadMap
 Created on Mon July 20 2023
 @author: Yash P
 '''
-class SpotCompleteSetupSM(Behavior):
+class ASpotCompleteSetupSM(Behavior):
 	'''
 	Spot Navigation Test with Dock and Map Verification
 	'''
 
 
 	def __init__(self):
-		super(SpotCompleteSetupSM, self).__init__()
-		self.name = 'Spot Complete Setup'
+		super(ASpotCompleteSetupSM, self).__init__()
+		self.name = 'A: Spot Complete Setup'
 
 		# parameters of this behavior
 		self.add_parameter('init_waypoint_id', 'blotto-guppy-Jj5vrF7oTWyVx7IRyczxqA==')
 		self.add_parameter('goal_waypoint_id', 'teal-drum-Gq4bd4gH8yKFst771bHEtg==')
 		self.add_parameter('true', True)
 		self.add_parameter('false', False)
-		self.add_parameter('reps', 1)
 		self.add_parameter('dock_id', 520)
 		self.add_parameter('change_map', False)
 		self.add_parameter('path_to_map', 'spot-sdk/spot_maps/mini_map_back_area/downloaded_graph')
@@ -60,45 +58,11 @@ class SpotCompleteSetupSM(Behavior):
 	def create(self):
 		# x:101 y:257, x:531 y:215
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.num_reps_IN = self.reps
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
 		
 		# [/MANUAL_CREATE]
-
-		# x:58 y:425, x:548 y:183
-		_sm_container_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['state_client', 'graph_nav_client', 'lease', 'power_client', 'robot_command_client', 'num_reps_IN'])
-
-		with _sm_container_0:
-			# x:153 y:74
-			OperatableStateMachine.add('CounterCheck',
-										CounterState(decrement=self.false),
-										transitions={'success': 'NavigateToDest', 'failed': 'failed', 'end': 'finished'},
-										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'num_reps': 'num_reps_IN', 'num_reps_remaining': 'num_reps_OUT'})
-
-			# x:478 y:357
-			OperatableStateMachine.add('DecrementCounter',
-										CounterState(decrement=self.true),
-										transitions={'success': 'CounterCheck', 'failed': 'failed', 'end': 'finished'},
-										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'num_reps': 'num_reps_OUT', 'num_reps_remaining': 'num_reps_IN'})
-
-			# x:501 y:40
-			OperatableStateMachine.add('NavigateToDest',
-										NavigateTo(destination_waypoint=self.goal_waypoint_id),
-										transitions={'continue': 'NavigateToStartPos', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
-
-			# x:842 y:205
-			OperatableStateMachine.add('NavigateToStartPos',
-										NavigateTo(destination_waypoint=self.init_waypoint_id),
-										transitions={'continue': 'DecrementCounter', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
-
 
 
 		with _state_machine:
@@ -109,13 +73,6 @@ class SpotCompleteSetupSM(Behavior):
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot', 'image_client': 'image_client', 'manipulation_api_client': 'manipulation_api_client'})
 
-			# x:806 y:309
-			OperatableStateMachine.add('Container',
-										_sm_container_0,
-										transitions={'finished': 'Dock', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'num_reps_IN': 'num_reps_IN'})
-
 			# x:483 y:379
 			OperatableStateMachine.add('Dock',
 										Dock(should_dock=self.true, dock_id=self.dock_id),
@@ -123,12 +80,26 @@ class SpotCompleteSetupSM(Behavior):
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
 
-			# x:834 y:139
+			# x:983 y:120
 			OperatableStateMachine.add('Localize',
 										Localize(initial_waypoint=self.init_waypoint_id),
-										transitions={'continue': 'Container', 'failed': 'failed'},
+										transitions={'continue': 'NavigateToGoal', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client'})
+
+			# x:974 y:299
+			OperatableStateMachine.add('NavigateToGoal',
+										NavigateTo(destination_waypoint=self.goal_waypoint_id),
+										transitions={'continue': 'NavigateToStart', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
+
+			# x:742 y:407
+			OperatableStateMachine.add('NavigateToStart',
+										NavigateTo(destination_waypoint=self.init_waypoint_id),
+										transitions={'continue': 'Dock', 'failed': 'failed'},
+										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
 
 			# x:209 y:288
 			OperatableStateMachine.add('ReturnLease',

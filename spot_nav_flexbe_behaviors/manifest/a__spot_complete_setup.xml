@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<behavior name="Spot Complete Setup">
+<behavior name="A: Spot Complete Setup">
 
-	<executable package_path="spot_nav_flexbe_behaviors.spot_complete_setup_sm" class="SpotCompleteSetupSM" />
+	<executable package_path="spot_nav_flexbe_behaviors.a__spot_complete_setup_sm" class="ASpotCompleteSetupSM" />
 	<tagstring>Spot Navigation Test</tagstring>
 	<author>Yash P</author>
 	<date>Mon July 20 2023</date>
@@ -23,11 +23,6 @@
 		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
 
 		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
-
-		<param type="numeric" name="reps" default="1" label="reps" hint="Sets the reps">
-			<min value="0" />
-			<max value="3" />
-		</param>
 
 		<param type="numeric" name="dock_id" default="520" label="dock_id" hint="Sets the dock_id">
 			<min value="0" />

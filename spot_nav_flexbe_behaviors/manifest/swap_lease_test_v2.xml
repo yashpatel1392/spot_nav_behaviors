@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Swap Lease Test v2">
+
+	<executable package_path="spot_nav_flexbe_behaviors.swap_lease_test_v2_sm" class="SwapLeaseTestv2SM" />
+	<tagstring>Swap Lease Test v2</tagstring>
+	<author>Yash P</author>
+	<date>Tue Feb 20 2024</date>
+	<description>
+		Swap Lease Test v2
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="text" name="topic" default="cont" label="topic" hint="Sets the topic" />
+
+	</params>
+
+
+</behavior>

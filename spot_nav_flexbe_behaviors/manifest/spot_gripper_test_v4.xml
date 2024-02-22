@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Gripper Test v4">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_gripper_test_v4_sm" class="SpotGripperTestv4SM" />
+	<tagstring>Spot Gripper Test v4</tagstring>
+	<author>Yash P</author>
+	<date>Thu February 22 2024</date>
+	<description>
+		Spot Gripper Test v4
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="text" name="fraction_open" default="1.0" label="fraction_open" hint="Sets the fraction_open" />
+
+		<param type="text" name="fraction_open_35" default="0.35" label="fraction_open_35" hint="Sets the fraction_open_35" />
+
+		<param type="text" name="fraction_close" default="0.0" label="fraction_close" hint="Sets the fraction_close" />
+
+	</params>
+
+
+</behavior>

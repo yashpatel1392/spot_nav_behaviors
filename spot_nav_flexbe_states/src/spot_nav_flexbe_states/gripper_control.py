@@ -26,11 +26,12 @@ class GripperControl(EventState):
 
     """
 
-    def __init__(self):
+    def __init__(self, fraction):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 
         super(GripperControl, self).__init__(outcomes=['success', 'failure'],
                                             input_keys=['robot_command_client', 'robot', 'lease'])
+        self._fraction = fraction
 
 
     def execute(self, userdata):
@@ -40,21 +41,21 @@ class GripperControl(EventState):
         with LeaseKeepAlive(userdata.lease):
             print("Opening the gripper......................")            
             # open the gripper
-            gripper_command = RobotCommandBuilder.claw_gripper_open_fraction_command(1.0)
+            gripper_command = RobotCommandBuilder.claw_gripper_open_fraction_command(float(self._fraction))
             # gripper_command = RobotCommandBuilder.claw_gripper_open_command()
             command_id = userdata.robot_command_client.robot_command(gripper_command)
             block_until_arm_arrives(userdata.robot_command_client, command_id, 3.0)
-            print("Finished opening the arm......................")
+            print("Finished opening the gripper......................")
             
-            time.sleep(5)
+            # time.sleep(5)
             
-            print("CLosing the gripper......................")            
-            # close the gripper
-            gripper_command = RobotCommandBuilder.claw_gripper_open_fraction_command(0.0)
-            # gripper_command = RobotCommandBuilder.claw_gripper_close_command()
-            command_id = userdata.robot_command_client.robot_command(gripper_command)
-            block_until_arm_arrives(userdata.robot_command_client, command_id, 3.0)
-            print("Finished closing the arm......................")
+            # print("CLosing the gripper......................")            
+            # # close the gripper
+            # gripper_command = RobotCommandBuilder.claw_gripper_open_fraction_command(0.0)
+            # # gripper_command = RobotCommandBuilder.claw_gripper_close_command()
+            # command_id = userdata.robot_command_client.robot_command(gripper_command)
+            # block_until_arm_arrives(userdata.robot_command_client, command_id, 3.0)
+            # print("Finished closing the gripper......................")
 
     
         return 'success'
