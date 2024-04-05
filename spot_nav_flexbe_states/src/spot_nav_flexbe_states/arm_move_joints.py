@@ -16,12 +16,22 @@ import time
 
 class ArmMoveJoints(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for moving the arm by providing each of the joint values.
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
-
+    -- sh0            String      joint value for sh0
+    -- sh1            String      joint value for sh1
+    -- el0            String      joint value for el0
+    -- el1            String      joint value for el1
+    -- wr0            String      joint value for wr0
+    -- wr1            String      joint value for wr1
+    
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+    ># state_client                     RobotStateClient    
+    
+    #> None
+    
     """
 
     def __init__(self, sh0, sh1, el0, el1, wr0, wr1):

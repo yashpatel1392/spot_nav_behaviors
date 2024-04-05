@@ -7,13 +7,15 @@ import json, time
 
 class GetArmData(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for reading the arm joint values and it is also used for saving arm 
+    positions and assigning it a name, which can be later used to move the arm to that saved 
+    position by the specifying the name of the saved position.
 
-    -- topic        string      name to topic, which has to be subscibed.
+    -- None
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
+    ># state_client            StateClient
+    
+    #> None
 
     """
 

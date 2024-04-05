@@ -17,12 +17,18 @@ import time
 
 class ArmMoveJointsName(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for moving the arm to a saved position by specifying the name of the saved
+    position. 
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
-
+    -- pose_name            String      name of the saved arm position
+    
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+    ># state_client                     RobotStateClient    
+    
+    #> None
+    
     """
 
     def __init__(self, pose_name):
@@ -37,13 +43,6 @@ class ArmMoveJointsName(EventState):
         self._el1 = 0.0
         self._wr0 = 0.0
         self._wr1 = 0.0
-        
-        # self._sh0 = float(sh0)
-        # self._sh1 = float(sh1)
-        # self._el0 = float(el0)
-        # self._el1 = float(el1)
-        # self._wr0 = float(wr0)
-        # self._wr1 = float(wr1)
         
 
     # This function is taken from the examples

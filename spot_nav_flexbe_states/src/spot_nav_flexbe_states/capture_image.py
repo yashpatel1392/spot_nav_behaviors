@@ -19,12 +19,17 @@ from bosdyn.api import image_pb2
 
 class CaptureImage(EventState):
     '''
-    sources: all (for getting images from all of the following sources), back_fisheye_image, frontleft_fisheye_image, frontright_fisheye_image, hand_color_image, left_fisheye_image, right_fisheye_image
+    This state is used for capturing and saving images from each of the spot's cameras.
+    
+    sources: all (for getting images from all of the following sources), 
+             back_fisheye_image, frontleft_fisheye_image, frontright_fisheye_image, 
+             hand_color_image, left_fisheye_image, right_fisheye_image
 
-    -- image_source 	string 	    specify the image source(s) to capture image from 
+    -- image_source 	string 	    list of the image source(s) to capture the image(s) from 
 
-    <= continue 			Given time has passed.
-    <= failed 				Example for a failure outcome.
+    ># image_client     ImageClient
+
+    #> image_response   ImageResponse, which is the list of the image responses
 
     '''
 

@@ -13,13 +13,12 @@ import time
 
 class AcquireLease(EventState):
     '''
-    Example for a state to demonstrate which functionality is available for state implementation.
-    This example lets the behavior wait until the given target_time has passed since the behavior has been started.
+    This state is used for acquiring the lease.
 
-    -- target_time 	float 	Time which needs to have passed since the behavior started.
-
-    <= continue 			Given time has passed.
-    <= failed 				Example for a failure outcome.
+    -- None
+    
+    ># lease                LeaseClient         lease client
+    #> lease_obj                                acquired lease object
 
     '''
 

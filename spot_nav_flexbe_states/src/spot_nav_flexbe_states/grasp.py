@@ -21,18 +21,26 @@ class Grasp(EventState):
     This state continues running until a "continue" message is published to the 
     topic, whose name is passed as an input parameter. 
 
-    -- stow        boolean      boolean for indicating whether to stow or unstow the arm.
+    -- None
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
-
+    ># manipulation_api_client          ManipulationApiClient
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+    ># image                            processed image
+    ># click_x                          X coordinate of the clicked object, which will grasped
+    ># click_y                          Y coordinate of the clicked object, which will grasped
+    
+    #> None
+    
+        
     """
 
     def __init__(self):
         # Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments.
 
         super(Grasp, self).__init__(outcomes=['success', 'failure'],
-                                            input_keys=['manipulation_api_client', 'robot_command_client', 'robot', 'lease', 'image', 'click_x', 'click_y'])
+                                    input_keys=['manipulation_api_client', 'robot_command_client', 'robot', 'lease', 'image', 'click_x', 'click_y'])
 
 
     def execute(self, userdata):

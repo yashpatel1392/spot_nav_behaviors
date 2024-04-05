@@ -18,12 +18,17 @@ import math
 
 class Dock(EventState):
     '''
-    Example for a state to demonstrate which functionality is available for state implementation.
-    This example lets the behavior wait until the given target_time has passed since the behavior has been started.
+    This state is used for docking or undocking the robot.
+    
+    -- should_dock          boolean         true would the dock the robot, while false would undock
+    -- dock_id              int             dock id of the docking station
 
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+    ># license_client                   LicenseClient    
 
-    <= continue 			Given time has passed.
-    <= failed 				Example for a failure outcome.
+    #> None
 
     '''
 

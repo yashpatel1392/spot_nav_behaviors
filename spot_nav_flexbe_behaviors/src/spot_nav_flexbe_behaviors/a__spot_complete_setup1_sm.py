@@ -10,7 +10,6 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from spot_nav_flexbe_states.acquire_lease import AcquireLease
 from spot_nav_flexbe_states.dock import Dock
-from spot_nav_flexbe_states.get_arm_data import GetArmData
 from spot_nav_flexbe_states.localize import Localize
 from spot_nav_flexbe_states.navigate import NavigateTo
 from spot_nav_flexbe_states.return_lease import ReturnLease
@@ -26,15 +25,15 @@ from spot_nav_flexbe_states.upload_map import UploadMap
 Created on Mon July 20 2023
 @author: Yash P
 '''
-class ASpotCompleteSetupSM(Behavior):
+class ASpotCompleteSetup1SM(Behavior):
 	'''
 	Spot Navigation Test with Dock and Map Verification
 	'''
 
 
 	def __init__(self):
-		super(ASpotCompleteSetupSM, self).__init__()
-		self.name = 'A: Spot Complete Setup'
+		super(ASpotCompleteSetup1SM, self).__init__()
+		self.name = 'A: Spot Complete Setup1'
 
 		# parameters of this behavior
 		self.add_parameter('init_waypoint_id', 'blotto-guppy-Jj5vrF7oTWyVx7IRyczxqA==')
@@ -57,7 +56,7 @@ class ASpotCompleteSetupSM(Behavior):
 
 
 	def create(self):
-		# x:101 y:257, x:646 y:215
+		# x:27 y:307, x:531 y:215
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -74,63 +73,28 @@ class ASpotCompleteSetupSM(Behavior):
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot', 'image_client': 'image_client', 'manipulation_api_client': 'manipulation_api_client'})
 
-			# x:510 y:22
-			OperatableStateMachine.add('AcquireLease',
-										AcquireLease(),
-										transitions={'continue': 'Undock', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
-
-			# x:385 y:373
-			OperatableStateMachine.add('Dock',
-										Dock(should_dock=self.true, dock_id=self.dock_id),
-										transitions={'continue': 'ReturnLease', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'lease': 'lease', 'robot_command_client': 'robot_command_client', 'license_client': 'license_client', 'robot': 'robot'})
-
-			# x:1067 y:442
-			OperatableStateMachine.add('GetArmPose',
-										GetArmData(),
-										transitions={'success': 'AcquireAgain'},
-										autonomy={'success': Autonomy.Off},
-										remapping={'state_client': 'state_client'})
-
-			# x:1098 y:25
+			# x:1040 y:189
 			OperatableStateMachine.add('Localize',
 										Localize(initial_waypoint=self.init_waypoint_id),
 										transitions={'continue': 'NavigateToGoal', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client'})
 
-			# x:1121 y:168
+			# x:877 y:369
 			OperatableStateMachine.add('NavigateToGoal',
 										NavigateTo(destination_waypoint=self.goal_waypoint_id),
-										transitions={'continue': 'ReturnLease1', 'failed': 'failed'},
+										transitions={'continue': 'ReturnLease', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
 
-			# x:589 y:463
-			OperatableStateMachine.add('NavigateToStart',
-										NavigateTo(destination_waypoint=self.init_waypoint_id),
-										transitions={'continue': 'Dock', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'state_client': 'state_client', 'graph_nav_client': 'graph_nav_client', 'lease': 'lease', 'power_client': 'power_client', 'robot_command_client': 'robot_command_client'})
-
-			# x:202 y:261
+			# x:550 y:438
 			OperatableStateMachine.add('ReturnLease',
 										ReturnLease(),
 										transitions={'continue': 'finished', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
 
-			# x:1167 y:307
-			OperatableStateMachine.add('ReturnLease1',
-										ReturnLease(),
-										transitions={'continue': 'GetArmPose', 'failed': 'failed'},
-										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
-
-			# x:760 y:29
+			# x:798 y:8
 			OperatableStateMachine.add('Undock',
 										Dock(should_dock=self.false, dock_id=self.dock_id),
 										transitions={'continue': 'Localize', 'failed': 'failed'},
@@ -144,10 +108,10 @@ class ASpotCompleteSetupSM(Behavior):
 										autonomy={'success': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'graph_nav_client': 'graph_nav_client'})
 
-			# x:839 y:432
-			OperatableStateMachine.add('AcquireAgain',
+			# x:510 y:22
+			OperatableStateMachine.add('AcquireLease',
 										AcquireLease(),
-										transitions={'continue': 'NavigateToStart', 'failed': 'failed'},
+										transitions={'continue': 'Undock', 'failed': 'failed'},
 										autonomy={'continue': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'lease': 'lease', 'lease_obj': 'lease_obj'})
 

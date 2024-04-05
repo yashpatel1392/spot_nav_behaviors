@@ -13,9 +13,6 @@ class CounterState(EventState):
 
     #> num_reps_remaining   int      this is the list of robot paths
 
-    <= success                       indicates successful completion of navigation.
-    <= failed                        indicates unsuccessful completion of navigation.
-
     """
 
     def __init__(self, decrement):

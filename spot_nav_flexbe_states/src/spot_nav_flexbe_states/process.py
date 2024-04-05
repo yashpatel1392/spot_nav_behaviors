@@ -48,13 +48,16 @@ def cv_mouse_callback(event, x, y, flags, param):
 
 class ProcessImageGrasp(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state would display the image captured from the robot and would let the user click on an
+    object which would be grasped.
 
-    -- stow        boolean      boolean for indicating whether to stow or unstow the arm.
+    -- None
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
+    ># image_response                   list of the image responses from the robot
+
+    #> image                            processed image
+    #> click_x                          X coordinate of the clicked object, which will grasped
+    #> click_y                          Y coordinate of the clicked object, which will grasped
 
     """
 

@@ -14,12 +14,14 @@ import math
 
 class Localize(EventState):
     '''
-    Example for a state to demonstrate which functionality is available for state implementation.
-    This example lets the behavior wait until the given target_time has passed since the behavior has been started.
-
-
-    <= continue 			Given time has passed.
-    <= failed 				Example for a failure outcome.
+    This state is used for localizing the robot by providing a waypoint.
+    
+    -- intial_waypoint          String              Waypoint id of the waypoint where the robot would localize itself
+    
+    ># state_client             StateClient
+    ># graph_nav_client         GraphNavClient, used for navigation
+    
+    #> None
 
     '''
 

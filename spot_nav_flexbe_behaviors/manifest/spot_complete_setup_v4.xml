@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Spot Complete Setup v4">
+
+	<executable package_path="spot_nav_flexbe_behaviors.spot_complete_setup_v4_sm" class="SpotCompleteSetupv4SM" />
+	<tagstring>Spot Navigation Test</tagstring>
+	<author>Yash P</author>
+	<date>Thu March 21 2024</date>
+	<description>
+		Spot Navigation Test with Dock and Map Verification
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="init_waypoint_id" default="matte-ape-bNBbkPwfxYyRffew6.f1Dg==" label="init_waypoint_id" hint="Sets the init_waypoint_id" />
+
+		<param type="text" name="goal_waypoint_id" default="skimpy-gaur-MNwYmUO39hVr4JGSeJZ3Mw==" label="goal_waypoint_id" hint="Sets the goal_waypoint_id" />
+
+		<param type="boolean" name="true" default="True" label="true" hint="Sets the true" />
+
+		<param type="boolean" name="false" default="False" label="false" hint="Sets the false" />
+
+		<param type="numeric" name="reps" default="1" label="reps" hint="Sets the reps">
+			<min value="0" />
+			<max value="15" />
+		</param>
+
+		<param type="numeric" name="dock_id" default="520" label="dock_id" hint="Sets the dock_id">
+			<min value="0" />
+			<max value="521" />
+		</param>
+
+		<param type="boolean" name="change_map" default="False" label="change_map" hint="Sets the change_map" />
+
+		<param type="text" name="path_to_map" default="spot-sdk/spot_maps/first_floor_map/downloaded_graph" label="path_to_map" hint="Sets the path_to_map" />
+
+		<param type="text" name="image_path" default="../spot_images" label="image_path" hint="Sets the image_path" />
+
+		<param type="text" name="image_source" default="hand_color_image" label="image_source" hint="Sets the image_source" />
+
+	</params>
+
+
+</behavior>

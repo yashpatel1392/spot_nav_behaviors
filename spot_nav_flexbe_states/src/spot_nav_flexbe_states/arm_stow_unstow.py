@@ -15,13 +15,15 @@ from bosdyn.client.lease import LeaseClient, LeaseKeepAlive
 
 class ArmStowUnstow(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for stowing or unstowing the arm. 
 
     -- stow        boolean      boolean for indicating whether to stow or unstow the arm.
-
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
+    
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+    
+    #> None
 
     """
 
