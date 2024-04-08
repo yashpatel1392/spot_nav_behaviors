@@ -16,13 +16,15 @@ import time
 
 class Power(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for powering on/off the robot.
 
-    -- stow        boolean      boolean for indicating whether to stow or unstow the arm.
+    -- on                 boolean       true would turn the robot, while false would power it off           
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
+    ># robot_command_client             RobotCommandClient          
+    ># robot                            robot object representing the robot
+    ># lease                            Lease object
+
+    #> None
 
     """
 

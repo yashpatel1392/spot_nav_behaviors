@@ -9,12 +9,15 @@ import time, json
 class PauseState(EventState):
     """
     This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    topic, whose name is passed as an input parameter. This state is also similar
+    to the get_arm_data.py as this state can also be used to get each of the arm joint values.
 
-    -- topic        string      name to topic, which has to be subscibed.
+    -- topic            string          name to topic, which has to be subscibed.
 
-    <= success                  indicates successful completion of navigation.
-    <= failed                   indicates unsuccessful completion of navigation.
+	># state_client             		StateClient
+
+    #> None
+
 
     """
 

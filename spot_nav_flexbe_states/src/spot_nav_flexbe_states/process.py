@@ -15,12 +15,6 @@ import numpy as np
 import cv2
 
 
-
-
-
-
-
-
 # Global fields
 g_img_click = None
 g_img = None
@@ -42,8 +36,6 @@ def cv_mouse_callback(event, x, y, flags, param):
         cv2.line(copy_img, (0, y), (width, y), color, thickness)
         cv2.line(copy_img, (x, 0), (x, height), color, thickness)
         cv2.imshow(param, copy_img)
-
-
 
 
 class ProcessImageGrasp(EventState):

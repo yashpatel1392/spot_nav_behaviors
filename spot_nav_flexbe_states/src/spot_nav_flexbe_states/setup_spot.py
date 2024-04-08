@@ -15,14 +15,25 @@ from bosdyn.client.manipulation_api_client import ManipulationApiClient
 
 class SetupSpot(EventState):
 	'''
-	Example for a state to demonstrate which functionality is available for state implementation.
-	This example lets the behavior wait until the given target_time has passed since the behavior has been started.
+	This state is used for initializing all the clients and creating the SDK and the robot object.
+	All the clients are assigned as output keys so that the following the states in the behavior
+	can use these client.
 
-	-- target_time 	float 	Time which needs to have passed since the behavior started.
+	-- None
 
-	<= continue 			Given time has passed.
-	<= failed 				Example for a failure outcome.
+	># None
 
+	#> lease                            Lease client
+	#> state_client             		StateClient
+    #> graph_nav_client         		GraphNavClient, used for navigation
+	#> robot_command_client             RobotCommandClient          
+    #> power_client                     PowerClient
+	#> robot                            robot object representing the robot
+	#> license_client					LicenseClient
+	#> manipulation_api_client          ManipulationApiClient
+    #> image_client     				ImageClient
+
+    
 	'''
 
 	def __init__(self):

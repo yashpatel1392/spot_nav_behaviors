@@ -13,13 +13,17 @@ import time
 
 class NavigateTo(EventState):
 	'''
-	Example for a state to demonstrate which functionality is available for state implementation.
-	This example lets the behavior wait until the given target_time has passed since the behavior has been started.
+	This state is used for navigating the robot to the destination waypoint provided.
 
-	-- target_time 	float 	Time which needs to have passed since the behavior started.
+    -- destination_waypoint          String              Waypoint id of the waypoint where the robot would navigate to
 
-	<= continue 			Given time has passed.
-	<= failed 				Example for a failure outcome.
+	># state_client             		StateClient
+    ># graph_nav_client         		GraphNavClient, used for navigation
+	># robot_command_client             RobotCommandClient          
+    ># power_client                     PowerClient
+    ># lease                            Lease object
+    
+    #> None
 
 	'''
 

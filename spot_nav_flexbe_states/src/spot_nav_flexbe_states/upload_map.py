@@ -9,12 +9,15 @@ from bosdyn.client.graph_nav import GraphNavClient
 
 class UploadMap(EventState):
     '''
-    This state does not require a lease
+    This state is used for verifying if the map is already present, if not it would upload it.
+    If should_upload is set to true, it would upload the map regardless of whether a map is there or not.
 
-    -- target_time 	float 	Time which needs to have passed since the behavior started.
+    -- path_to_graph 	    String 	        path to the map, which would be used for navigation.
+    -- should_upload        boolean         true would upload the map to robot, false wouldn't          
 
-    <= continue 			Given time has passed.
-    <= failed 				Example for a failure outcome.
+    ># graph_nav_client         		GraphNavClient, used for navigation
+
+    #> None
 
     '''
 

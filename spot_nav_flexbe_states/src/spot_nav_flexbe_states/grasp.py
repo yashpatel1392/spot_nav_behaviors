@@ -18,8 +18,7 @@ import time
 
 class Grasp(EventState):
     """
-    This state continues running until a "continue" message is published to the 
-    topic, whose name is passed as an input parameter. 
+    This state is used for grasp the object whose coordinates are received from the process state. 
 
     -- None
 
