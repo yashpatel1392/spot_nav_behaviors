@@ -1,9 +1,9 @@
 # spot_nav_behaviors
 
-## Overview:
+## Overview
 This repository contains FlexBE states for performing navigation and manipulation with the spot. Main capabilities include navigation, getting and saving the arm joint values, moving the arm joints, capturing images from each or all of the sources, and automatic grasping.
 
-## Capabilities:
+## Capabilities
 
 - Navigation: States such as `upload_map.py`, `localize.py`, and `navigate.py` can be used to perform a navigation test with the spot. The state `upload_map.py` is used to verify if a map is already present on the spot, if not it would upload it. This state can also be used to upload a new map by setting the upload_map paramter to true. The state `localize.py` is used to localize the spot to an initial waypoint. The state `navigate.py` is the state which initiates the navigation and have the spot navigate to the given destination waypoint. 
 
