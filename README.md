@@ -1,2 +1,19 @@
 # spot_nav_behaviors
-This repo contains all spot_nav-specific states and behaviors.
+
+## Overview:
+This repository contains FlexBE states for performing navigation and manipulation with the spot. Main capabilities include navigation, getting and saving the arm joint values, moving the arm joints, capturing images from each or all of the sources, and automatic grasping.
+
+## Capabilities:
+
+- Navigation: States such as `upload_map.py`, `localize.py`, and `navigate.py` can be used to perform a navigation test with the spot. The state `upload_map.py` is used to verify if a map is already present on the spot, if not it would upload it. This state can also be used to upload a new map by setting the upload_map paramter to true. The state `localize.py` is used to localize the spot to an initial waypoint. The state `navigate.py` is the state which initiates the navigation and have the spot navigate to the given destination waypoint. 
+
+- Getting and saving the arm joint values and moving the arm: The state `get_arm_data.py` can be used to print each of 6 arm joint values by pressing enter, it would also give an option of saving that particular set of arm joint values to a file and assign a name to it so that it can be later used to move the arm to that position by specifying the name of the saved value instead of specifying each of the 6 joint values. Main usecase of this state would be when the arm is controlled using the tablet manually, this state can be launched in background to get the joint values and save the arm poses where it would be moved more often. This state can ran by itself, which means this state would be the only the state in the behavior tree. The states `arm_move_joints_name.py` or `arm_move_joints.py` can be used to move the arm by providing name of the saved arm position or each of the 6 joint values respectively. 
+
+- Image capture: The state `capture_image.py` can be used to capture images from either one of the cameras of the spot or multiple cameras at once. There is only one parameter for the state, so to capture image from more than one source, the sources can be listed together as a string seperated by a comma and a space. To capture from all sources, 'all' can be entered as the paramter value.
+
+- Grasping: The state `process.py` can be used with the state `capture_image.py` to capture an image from a single image source and process that image response to extract the coordinates of the object which the user wants to grasp. `process.py` uses opencv where the image response would be displayed on an opencv window and would let the user click on the object which the robot would later grasp. The state `grasp.py` would intiate the grasp and would pickup the object and would continue to hold the object until it is released manually or by using the states for moving the arm and opening the gripper.
+
+- The state `dock.py` can be used to dock or undock the robot. The state `power.py` can be used to power on and power off the robot. The state `stand_sit.py` can be used to stand or sit the robot. The state `arm_stow_unstow.py` can be used to either stow or unstow the arm. The state `gripper_control.py` can be used to control the gripper fractionally. The state `acquire_lease.py` is used for acquiring the lease and the state `return_lease.py` is used for releasing the lease. 
+
+- The state `counter.py` can be used to run a behavior tree for multiple repetitions autonomously. To use this, two instances of the counter state are required where the first instance would be the first state of the behavior tree, and the second instance would be the last state of the behavior tree. The first instance is used to decrement the number of repetitions, while the second instances determines if there are any number of repetitions remaining. For the second instance, if the number of repetitions is not 0 then it points to the first instance which results in the behavior tree being executed again, if the number of remaining repetitions is 0 then it ends the behavior tree. The number of repetitions is assigned as both the input key and the output key, so that it can be accessed by both instances. 
+
